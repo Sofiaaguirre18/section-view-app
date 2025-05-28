@@ -18,7 +18,7 @@ export default function Home() {
         
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => router.push("/section/faculty")}
+          onPress={() => router.push("/section/SectionList")}
         >
           <Text style={styles.buttonText}>Faculty</Text>
         </TouchableOpacity>
@@ -44,6 +44,10 @@ const styles = StyleSheet.create({
     width: "80%",
     maxWidth: 300,
     gap: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   button: {
     backgroundColor: "#f8f8f8",

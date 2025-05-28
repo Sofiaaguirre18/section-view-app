@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   SafeAreaView,
   StatusBar,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -13,118 +14,34 @@ import { Stack, useRouter } from "expo-router";
 
 export default function ClassList() {
   const router = useRouter();
+  const [searchText, setSearchText] = useState("");
+  const [selectedGender, setSelectedGender] = useState("All");
+  const [open, setOpen] = useState(false);
 
-  // Filter states
-  const [selectedGrade, setSelectedGrade] = useState("All");
-  const [selectedStrand, setSelectedStrand] = useState("All");
-
-  // DropDownPicker states
-  const [gradeOpen, setGradeOpen] = useState(false);
-  const [strandOpen, setStrandOpen] = useState(false);
-
-  // Data for dropdowns
-  const gradeItems = [
+  const [genderItems, setGenderItems] = useState([
     { label: "All", value: "All" },
-    { label: "11", value: "Grade 11" },
-    { label: "12", value: "Grade 12" },
-  ];
+    { label: "Male", value: "Male" },
+    { label: "Female", value: "Female" },
+  ]);
 
-  const strandItems = [
-    { label: "All", value: "All" },
-    { label: "STEM", value: "STEM" },
-    { label: "ABM", value: "ABM" },
-    { label: "HUMSS", value: "HUMSS" },
-    { label: "GAS", value: "GAS" },
-    { label: "TVL", value: "TVL" },
-  ];
+  const [students] = useState([
+    { id: 1, studentId: "22-32295", name: "Aguirre, Princess Sofia P." },
+    { id: 2, studentId: "22-33362", name: "San Esteban, Annemory O." },
+    { id: 3, studentId: "22-32216", name: "Carullo, Andrei" },
+    { id: 4, studentId: "23-31104", name: "Tadeo, Angel Marie M." },
+  ]);
 
-  // Class section data
-  const classSections = {
-    am: [
-      {
-        id: "1",
-        name: "ABM K",
-        grade: "Grade 11",
-        strand: "ABM",
-        adviser: "Ms. Lei V. Lucman",
-      },
-      {
-        id: "2",
-        name: "GAS A",
-        grade: "Grade 11",
-        strand: "GAS",
-        adviser: "Mr. Kyle B. Pornillos",
-      },
-      {
-        id: "3",
-        name: "ICT C",
-        grade: "Grade 12",
-        strand: "TVL",
-        adviser: "Mr. Adrian Reapor",
-      },
-      {
-        id: "4",
-        name: "HUMMS A",
-        grade: "Grade 12",
-        strand: "HUMSS",
-        adviser: "Ms. Nichole E. Sibucao",
-      },
-    ],
-    pm: [
-      {
-        id: "5",
-        name: "STEM A",
-        grade: "Grade 11",
-        strand: "STEM",
-        adviser: "Ms. Annemony O. San Esteban",
-      },
-      {
-        id: "6",
-        name: "STEM B",
-        grade: "Grade 12",
-        strand: "STEM",
-        adviser: "Mr. Jesse Tapan",
-      },
-    ],
-  };
+  const filteredStudents = students.filter(
+    (student) =>
+      student.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      student.studentId.includes(searchText)
+  );
 
-  // Filter sections based on selections
-  const getFilteredSections = (sections) => {
-    return sections.filter((section) => {
-      const gradeMatch = selectedGrade === "All" || section.grade === selectedGrade;
-      const strandMatch = selectedStrand === "All" || section.strand === selectedStrand;
-      return gradeMatch && strandMatch;
-    });
-  };
-
-  const filteredAMSections = getFilteredSections(classSections.am);
-  const filteredPMSections = getFilteredSections(classSections.pm);
-
-  // Section renderer
-  const renderSections = (sections, title) => (
-    <View style={styles.classContainer}>
-      <Text style={styles.headerText}>{title}</Text>
-      <View style={styles.divider} />
-      
-      <View style={styles.sectionsContainer}>
-        {sections.length > 0 ? (
-          sections.map((section, index) => (
-            <View key={section.id}>
-              <TouchableOpacity style={styles.sectionCard}>
-                <Text style={styles.sectionName}>{section.name}</Text>
-                <Text style={styles.sectionAdviser}>
-                  Adviser: {section.adviser}
-                </Text>
-              </TouchableOpacity>
-              {index < sections.length - 1 && <View style={styles.cardDivider} />}
-            </View>
-          ))
-        ) : (
-          <View style={styles.noResults}>
-            <Text style={styles.noResultsText}>No sections</Text>
-          </View>
-        )}
-      </View>
+  const renderStudentItem = ({ item, index }) => (
+    <View style={styles.tableRow}>
+      <Text style={styles.numberCell}>{index + 1}</Text>
+      <Text style={styles.studentIdCell}>{item.studentId}</Text>
+      <Text style={styles.nameCell}>{item.name}</Text>
     </View>
   );
 
@@ -135,62 +52,87 @@ export default function ClassList() {
       {/* Header Title */}
       <Stack.Screen
         options={{
-          title: "Class Sections",
+          title: "Student List",
         }}
       />
 
-      <ScrollView style={styles.content}>
-        {/* Filter Dropdowns */}
-        <View style={styles.filtersContainer}>
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>Grade Level:</Text>
-            <View style={styles.dropdownContainer}>
-              <DropDownPicker
-                open={gradeOpen}
-                value={selectedGrade}
-                items={gradeItems}
-                setOpen={setGradeOpen}
-                setValue={setSelectedGrade}
-                style={styles.dropdown}
-                textStyle={styles.dropdownText}
-                dropDownContainerStyle={styles.dropDownContainer}
-                arrowIconStyle={styles.arrowIcon}
-                tickIconStyle={styles.tickIcon}
-                placeholder="All"
-                zIndex={3000}
-                zIndexInverse={1000}
-              />
-            </View>
-          </View>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>ABM K</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.txt}>11 - STEM</Text>
+          <Text style={styles.txt}>AMS 203</Text>
+          <Text style={styles.txt}>AM Class</Text>
+        </View>
+      </View>
 
-          <View style={styles.filterItem}>
-            <Text style={styles.filterLabel}>Strand:</Text>
-            <View style={styles.dropdownContainer}>
-              <DropDownPicker
-                open={strandOpen}
-                value={selectedStrand}
-                items={strandItems}
-                setOpen={setStrandOpen}
-                setValue={setSelectedStrand}
-                style={styles.dropdown}
-                textStyle={styles.dropdownText}
-                dropDownContainerStyle={styles.dropDownContainer}
-                arrowIconStyle={styles.arrowIcon}
-                tickIconStyle={styles.tickIcon}
-                placeholder="Select Strand"
-                zIndex={2000}
-                zIndexInverse={2000}
-              />
-            </View>
+      <View style={styles.filtersContainer}>
+        {/* Search bar with icon */}
+        <View style={styles.searchWrapper}>
+          <View style={styles.dropdownContainer}>
+          <TextInput
+            style={styles.searchFilter}
+            placeholder="Search"
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholderTextColor="#999"
+            zIndex={3000}
+            zIndexInverse={1000}
+          />
           </View>
         </View>
 
-        {/* Class Section Cards */}
-        <View style={styles.mainContainer}>
-          {renderSections(filteredAMSections, "AM Class")}
-          {renderSections(filteredPMSections, "PM Class")}
+        {/* Gender dropdown */}
+        <View style={styles.filterGender}>
+          <Text style={styles.genderLabel}>Gender:</Text>
+          <View style={styles.dropdownContainer}>
+          <DropDownPicker
+            open={open}
+            value={selectedGender}
+            items={genderItems}
+            setOpen={setOpen}
+            setValue={setSelectedGender}
+            setItems={setGenderItems}
+            style={styles.genderFilter}
+            dropDownContainerStyle={styles.dropdownContainer}
+            textStyle={styles.dropdownText}
+            arrowIconStyle={styles.arrowIcon}
+            tickIconStyle={styles.tickIcon}
+            placeholder="All"
+            zIndex={2000}
+            zIndexInverse={2000}
+          />
+          </View>
         </View>
-      </ScrollView>
+      </View>
+
+      <View style={styles.headerContainer}>
+      <Text style={styles.headerNumber}>No.</Text>
+      <Text style={styles.headerStudentId}>StudentID</Text>
+      <Text style={styles.headerName}>Name</Text>
+    </View>
+
+      <FlatList
+        data={filteredStudents}
+        renderItem={renderStudentItem}
+        keyExtractor={(item) => item.id.toString()}
+        style={styles.studentList}
+        showsVerticalScrollIndicator={false}
+      />
+
+      <View style={styles.footer}>
+        <Text style={styles.adviserName}>Ms. Lei V. Lucman</Text>
+        <Text style={styles.footerText}>ABM K - Adviser</Text>
+      </View>
+
+      {/* Close Button */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.closeButtonText}>CLOSE</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -198,49 +140,51 @@ export default function ClassList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  content: {
-    padding: 16,
-  },
-  mainContainer: {
-    gap: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: "700",
-    textAlign: "center",
-    paddingVertical: 12,
-    color: "#333",
     backgroundColor: "#fff",
   },
-  divider: {
-    height: 2,
-    backgroundColor: "#E02B20",
+  titleContainer: {
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    margin: 15,
   },
-  cardDivider: {
-    height: 1,
-    backgroundColor: "#C4C4C4",
-    marginLeft: 16,
-    marginRight: 16,
+  titleText: {
+    fontSize: 24,
+    fontWeight: "bold",
   },
-  filtersContainer: {
+  textContainer: {
+    marginTop: 20,
+    gap: 80,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
   },
-  filterItem: {
+  txt: {
+    fontSize: 14,
+  },
+  filtersContainer: {
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  searchWrapper: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
     marginRight: 8,
   },
-  filterLabel: {
+    filterGender: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginRight: 8,
+  },
+  genderLabel: {
     fontSize: 14,
     fontWeight: "500",
     marginRight: 8,
@@ -248,7 +192,14 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     flex: 1,
   },
-  dropdown: {
+  searchFilter: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 4,
+    backgroundColor: "#fff",
+    minHeight: 36,
+  },
+   genderFilter: {
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 4,
@@ -274,42 +225,119 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
   },
-  classContainer: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    overflow: "hidden",
-  },
-  sectionsContainer: {
-    backgroundColor: "#fff",
-  },
-  sectionCard: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderLeftWidth: 5,
-    borderLeftColor: "#7D7C7C",
+// Fixed header container - make it align with table rows
+headerContainer: {
+  paddingVertical: 15,
+  paddingHorizontal: 15,
+  backgroundColor: "white",
+  marginHorizontal: 15,
+  flexDirection: "row",
+  alignItems: "center",
+  borderBottomWidth: 2,
+  borderBottomColor: "#E02B20",
+},
 
+headerNumber: {
+  fontSize: 16,
+  fontWeight: "bold",
+  color: '#333',
+  width: 40,
+  textAlign: 'center',
+},
+
+headerStudentId: {
+  fontSize: 16,
+  fontWeight: "bold",
+  color: '#333',
+  width: 100,
+  marginHorizontal: 30,
+},
+
+headerName: {
+  fontSize: 16,
+  fontWeight: "bold",
+  color: '#333',
+  flex: 1,
+  marginLeft: 10,
+},
+
+  studentList: {
+  flex: 1,
+  marginHorizontal: 15,
+  marginTop: 10,
+  backgroundColor: '#fff',
+},
+
+
+tableRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: 12,
+  paddingHorizontal: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: '#f0f0f0',
+  backgroundColor: '#fff',
+},
+
+numberCell: {
+  fontSize: 14,
+  fontWeight: '500',
+  color: '#333',
+  width: 20,
+  textAlign: 'center',
+},
+
+studentIdCell: {
+  fontSize: 14,
+  color: '#666',
+  fontFamily: 'monospace',
+  width: 100,
+  marginLeft: 55,
+},
+
+nameCell: {
+  fontSize: 14,
+  color: '#333',
+  flex: 1,
+  fontWeight: '400',
+},
+
+
+  footer: {
+    alignItems: "right",
+    paddingVertical: 15,
+    marginRight: 18,
   },
-  sectionName: {
+  adviserName: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    color: "black",
+    textAlign: "right",
+    fontWeight: "bold",
+    marginRight: 18,
   },
-  sectionAdviser: {
+  footerText: {
     fontSize: 14,
     color: "#666",
-    marginTop: 4,
+    textAlign: "right",
+    marginRight: 30,
   },
-  noResults: {
-    padding: 20,
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     alignItems: "center",
+    justifyContent: "center",
   },
-  noResultsText: {
+  closeButton: {
+    backgroundColor: "#f44336",
+    paddingVertical: 12,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "50%",
+  },
+  closeButtonText: {
+    color: "white",
     fontSize: 16,
-    color: "#666",
+    fontWeight: "bold",
   },
 });

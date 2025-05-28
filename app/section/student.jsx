@@ -18,14 +18,14 @@ export default function Student() {
 
       {/* Welcome Text */}
       <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Hello, What brings you here?</Text>
+        <Text style={styles.welcomeText}>Quick access to your student tools:</Text>
       </View>
 
       <View style={styles.optionsContainer}>
         {/* Find my section */}
         <TouchableOpacity 
           style={styles.optionButton}
-          onPress={() => router.push('/section/ClassList')}
+          onPress={() => router.push('/section/SectionList')}
         >
           <View style={styles.optionContent}>
             <Text style={styles.optionText}>View Section</Text>
@@ -33,13 +33,13 @@ export default function Student() {
         </TouchableOpacity>
 
         {/* Answer Survey */}
+        <Text style={styles.stemLabelText}>For STEM students only.</Text>
         <TouchableOpacity 
           style={styles.optionButton}
           onPress={() => router.push('/section/specializationForm')}
         >
           <View style={styles.optionContent}>
             <View style={styles.surveyOptionContainer}>
-              <Text style={styles.stemLabelText}>For STEM students only.</Text>
               <Text style={styles.optionText}>Answer Survey</Text>
             </View>
           </View>
@@ -58,6 +58,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 10,
+    marginBottom: 20,
+    marginHorizontal: 5,
+    marginTop: 10,
+    marginBottom: 20,
   },
   welcomeText: {
     fontSize: 18,
@@ -68,13 +72,20 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   optionButton: {
-    borderRadius: 8,
+    borderRadius: 2,
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    height: '20%',
+    width: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: '5%',
+    borderLeftWidth: 6,
+    borderLeftColor: "#B92F2F",
   },
   optionContent: {
     flexDirection: 'row',
@@ -90,7 +101,8 @@ const styles = StyleSheet.create({
   },
   stemLabelText: {
     fontSize: 12,
-    color: '#f44336',
-    marginBottom: 4,
+    color: '#B92F2F',
+    marginTop: 20,
+    marginHorizontal: '5%',
   },
 });

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
-  Button
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Stack, useRouter } from "expo-router";
@@ -46,32 +45,57 @@ export default function classList() {
       {/* Header Title */}
       <Stack.Screen
         options={{
-          title: "Class Section",
+          title: "STEM Specialization",
         }}
       />
 
       <View style={styles.content}>
-        <Text style={styles.headerText}>Available Survey Form</Text>
-        <Text style={styles.filterLabel}>Student ID:</Text>
-        <TextInput
-          style={styles.textFieldInput}
-          placeholder="**-*****"
-          value={enteredStudentID}
-          onChangeText={setStudentID}
-        />
+        <Text style={styles.headerText}>Fill up the following:</Text>
+        
+        {/* Student ID Field */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>STUDENT ID:</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="**-*****"
+            value={enteredStudentID}
+            onChangeText={setStudentID}
+          />
+        </View>
 
-        <Text style={styles.filterLabel}>Specialization:</Text>
-        <DropDownPicker
-          open={open}
-          value={selectedSpecialization}
-          items={items}
-          setOpen={setOpen}
-          setValue={setselectedSpecialization}
-          setItems={setItems}
-          style={styles.dropdown}
-          placeholder="All"
-          dropDownContainerStyle={styles.dropdownContainer}
-        />
+        {/* Specialization Dropdown */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>SELECT SPECIALIZATION:</Text>
+          <DropDownPicker
+            open={open}
+            value={selectedSpecialization}
+            items={items}
+            setOpen={setOpen}
+            setValue={setselectedSpecialization}
+            setItems={setItems}
+            style={styles.dropdown}
+            placeholder="Select"
+            dropDownContainerStyle={styles.dropdownContainer}
+            textStyle={styles.dropdownText}
+            placeholderStyle={styles.placeholderStyle}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleStudentInput}
+          >
+            <Text style={styles.submitButtonText}>SUBMIT</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => router.push("/")}
+          >
+            <Text style={styles.cancelButtonText}>CANCEL</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -80,71 +104,85 @@ export default function classList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
   },
-  welcomeContainer: {
+  content: {
+    flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
+    paddingTop: 30,
   },
-  welcomeText: {
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  optionsContainer: {
-    padding: 20,
-    gap: 20,
-  },
-  optionButton: {
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  optionContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
-  },
-  optionText: {
+  headerText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 40,
   },
-  surveyOptionContainer: {
-    flexDirection: "column",
+  inputGroup: {
+    marginBottom: 30,
   },
-  stemLabelText: {
+  label: {
     fontSize: 12,
-    color: "#f44336",
-    marginBottom: 4,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+    letterSpacing: 0.5,
   },
-    filterLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginRight: 8,
-  },
-  textFieldInput: {
+  textInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    color: '#120438',
-    borderRadius: 6,
-    width: '60%',
-    padding: 16,
-    marginBottom: 10,
-
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    padding: 12,
+    fontSize: 16,
+    height: 45,
   },
-    dropdown: {
-    width: '60%',
-    marginBottom: 10,
-    borderRadius: 6,
-    borderColor: '#ccc',
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    height: 45,
   },
   dropdownContainer: {
-    width: '60%',
-    borderRadius: 6,
-    borderColor: '#ccc',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  placeholderStyle: {
+    color: '#999',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    marginTop: 40,
+  },
+  submitButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    borderRadius: 4,
+    marginBottom: 15,
+  },
+  cancelButton: {
+    backgroundColor: '#f44336',
+    paddingVertical: 15,
+    borderRadius: 4,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  cancelButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
 });
