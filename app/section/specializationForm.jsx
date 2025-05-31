@@ -7,9 +7,45 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Modal,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Stack, useRouter } from "expo-router";
+
+// PopUp Modal Component
+const PopUpModal = ({ visible, onClose, type = 'success', message }) => {
+  const isSuccess = type === 'success';
+  
+  return (
+    <Modal
+      visible={visible}  
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity 
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity 
+          style={styles.modalContent}
+          activeOpacity={1}
+          onPress={() => {}} // Prevent modal from closing when touching content
+        >
+          <View style={isSuccess ? styles.checkmarkContainer : styles.errorContainer}>
+            <Text style={isSuccess ? styles.checkmark : styles.exclamationMark}>
+              {isSuccess ? '✓' : '!'}
+            </Text>
+          </View>
+          <Text style={isSuccess ? styles.successText : styles.errorText}>
+            {message || (isSuccess ? 'SUBMITTED!' : 'You already selected Specialization!')}
+          </Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    </Modal>
+  );
+};
 
 export default function classList() {
   const router = useRouter();
@@ -23,9 +59,59 @@ export default function classList() {
     { label: "Engineering", value: "Engineering" },
   ]);
 
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('success');
+  const [modalMessage, setModalMessage] = useState('');
+
+  // Mock data for checking if student already has specialization
+  const studentsWithSpecialization = ['22-12345', '22-54321', '23-11111'];
+
   function handleStudentInput() {
-    studentInput(enteredStudentID, selectedSpecialization);
-    resetForm();
+    // Validate inputs
+    if (!enteredStudentID.trim()) {
+      showErrorModal('Please enter Student ID');
+      return;
+    }
+
+    if (!selectedSpecialization) {
+      showErrorModal('Please select a specialization');
+      return;
+    }
+
+    // Check if student already has specialization
+    if (studentsWithSpecialization.includes(enteredStudentID)) {
+      showErrorModal('You already selected Specialization!');
+      return;
+    }
+
+    // If validation passes, show success modal
+    showSuccessModal('SUBMITTED!');
+    
+    // Here you would typically call your API to submit the data
+    // studentInput(enteredStudentID, selectedSpecialization);
+  }
+
+  function showSuccessModal(message = 'SUBMITTED!') {
+    setModalType('success');
+    setModalMessage(message);
+    setShowModal(true);
+    
+    // Auto-close success modal after 2 seconds and reset form
+    setTimeout(() => {
+      setShowModal(false);
+      resetForm();
+    }, 2000);
+  }
+
+  function showErrorModal(message) {
+    setModalType('error');
+    setModalMessage(message);
+    setShowModal(true);
+  }
+
+  function closeModal() {
+    setShowModal(false);
   }
 
   function resetForm() {
@@ -34,8 +120,8 @@ export default function classList() {
   }
 
   function cancelHandler() {
-    setModalIsVisible(false);
     resetForm();
+    router.push("/");
   }
 
   return (
@@ -91,12 +177,20 @@ export default function classList() {
 
           <TouchableOpacity
             style={styles.cancelButton}
-            onPress={() => router.push("/")}
+            onPress={cancelHandler}
           >
             <Text style={styles.cancelButtonText}>CANCEL</Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* PopUp Modal */}
+      <PopUpModal
+        visible={showModal}
+        onClose={closeModal}
+        type={modalType}
+        message={modalMessage}
+      />
     </SafeAreaView>
   );
 }
@@ -184,5 +278,69 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     letterSpacing: 0.5,
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 40,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    minWidth: 250,
+  },
+  checkmarkContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#4CAF50',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  errorContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F44336',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  checkmark: {
+    color: 'white',
+    fontSize: 40,
+    fontWeight: 'bold',
+  },
+  exclamationMark: {
+    color: 'white',
+    fontSize: 40,
+    fontWeight: 'bold',
+  },
+  successText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

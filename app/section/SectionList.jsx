@@ -136,7 +136,7 @@ export default function ClassList() {
       {/* Header Title */}
       <Stack.Screen
         options={{
-          title: "Class Sections",
+          title: "Sections ",
         }}
       />
 

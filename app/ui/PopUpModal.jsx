@@ -4,12 +4,14 @@ import {
   Text,
   Modal,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 
+// Success Modal Component
 const SuccessModal = ({ visible, onClose }) => {
   return (
     <Modal
-      visible={visible}
+      visible={visible}  
       transparent={true}
       animationType="fade"
       onRequestClose={onClose}
@@ -22,6 +24,62 @@ const SuccessModal = ({ visible, onClose }) => {
           <Text style={styles.successText}>SUBMITTED!</Text>
         </View>
       </View>
+    </Modal>
+  );
+};
+
+// Error Modal Component
+const ErrorModal = ({ visible, onClose }) => {
+  return (
+    <Modal
+      visible={visible}  
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.errorContainer}>
+            <Text style={styles.exclamationMark}>!</Text>
+          </View>
+          <Text style={styles.errorText}>You already selected Specialization!</Text>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+// Combined Modal Component (handles both types)
+const PopUpModal = ({ visible, onClose, type = 'success', message }) => {
+  const isSuccess = type === 'success';
+  
+  return (
+    <Modal
+      visible={visible}  
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity 
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity 
+          style={styles.modalContent}
+          activeOpacity={1}
+          onPress={() => {}}
+        >
+          <View style={isSuccess ? styles.checkmarkContainer : styles.errorContainer}>
+            <Text style={isSuccess ? styles.checkmark : styles.exclamationMark}>
+              {isSuccess ? '✓' : '!'}
+            </Text>
+          </View>
+          <Text style={isSuccess ? styles.successText : styles.errorText}>
+            {message || (isSuccess ? 'SUBMITTED!' : 'You already selected Specialization!')}
+          </Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 };
@@ -46,6 +104,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    minWidth: 250,
   },
   checkmarkContainer: {
     width: 80,
@@ -56,7 +115,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  errorContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F44336',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   checkmark: {
+    color: 'white',
+    fontSize: 40,
+    fontWeight: 'bold',
+  },
+  exclamationMark: {
     color: 'white',
     fontSize: 40,
     fontWeight: 'bold',
@@ -66,7 +139,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });
 
-export default SuccessModal;
